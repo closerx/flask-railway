@@ -1,26 +1,52 @@
-<!doctype html>
-<html lang="en">
-  <head>
-      <meta charset="utf-8">
-      <meta name="description" content="alphasec">
-      <meta name="author" content="alphasec">
-      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <title>alphasec</title>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-      <link rel="stylesheet" href="static/css/styles.css">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:500&display=swap">
-      <link rel="icon" href="static/favicon.ico" type="image/x-icon">
-  </head>
-  <body>
-    <div class="row">
-      <h1 class="h1">alphasec</h1>
-    </div>
-    <div class="row">
-      <div>
-      </div>
-    </div>
-    <div class="row">
-      <span class="text-muted small">alphasec © 2024. All rights reserved.</span>
-    </div>
-  </body>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>نسخ صوتي مباشر - DeepGram + Flask</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    body { font-family: Arial; text-align: center; padding: 40px; background: #f0f2f5; }
+    #output { margin: 30px auto; width: 80%; min-height: 200px; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-size: 1.4em; line-height: 1.8; }
+    button { padding: 15px 40px; font-size: 1.2em; background: #007bff; color: white; border: none; border-radius: 50px; cursor: pointer; }
+    button:disabled { background: #ccc; }
+    .recording { background: #dc3545 !important; }
+  </style>
+</head>
+<body>
+  <h1>نسخ صوتي مباشر بالعربية</h1>
+  <button id="toggleBtn">ابدأ التسجيل</button>
+  <div id="output">النص سيظهر هنا تلقائياً...</div>
+
+  <script>
+    const socket = io();
+    const btn = document.getElementById('toggleBtn');
+    const output = document.getElementById('output');
+    let isRecording = false;
+
+    btn.onclick = () => {
+      if (!isRecording) {
+        socket.emit('start_transcription');
+        btn.textContent = 'جاري التسجيل... اضغط للإيقاف';
+        btn.classList.add('recording');
+        output.textContent = 'جاري الاستماع...';
+        isRecording = true;
+      } else {
+        location.reload(); // أبسط طريقة للإيقاف حالياً
+      }
+    };
+
+    socket.on('transcript_update', (data) => {
+      if (data.is_final) {
+        output.textContent = data.text;  // الكلمة النهائية
+      } else {
+        output.textContent = data.text + " ...";  // كلام مؤقت
+      }
+    });
+
+    socket.on('error', (data) => {
+      output.textContent = "خطأ: " + data.message;
+    });
+  </script>
+</body>
 </html>
