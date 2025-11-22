@@ -7,10 +7,10 @@ import websockets
 import json
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
+app.config['SECRET_KEY'] = "qwertyuiopasdfghjklzxcvbnm"
 
 # مفتاح DeepGram من Environment Variable (أمان أكتر)
-DEEPGRAM_API_KEY = os.getenv('DEEPGRAM_API_KEY', 'ضع_مفتاحك_هنا')
+DEEPGRAM_API_KEY = "3c87d0d29e1ed5b1cabf7ab61fd326b9e04f5a75" 
 
 # الحل: async_mode=None (افتراضي threading) - مش 'asgi'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode=None)  # <-- هنا التغيير الرئيسي
